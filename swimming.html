@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        *{
+            margin: 0;
+        }
+        #container{
+            background-color: blue;
+            width: 100vw;
+            height: 100vh;
+        }
+        #character{
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute;
+            top: 500px;
+            left: 0%;
+        }
+        #circle{
+            width: 30px;
+            height: 30px;
+            background-color: black;
+            border-radius: 30px;
+            position: absolute;
+        }
+        h1{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="character" style="top: 500px; left: 0%;"></div>
+        <div id="circle" style="top: 50px; left: 50px;"></div>
+        <h1></h1>
+
+    </div>
+    
+</body>
+</html>
+
+<script>
+    const container = document.getElementById("container")
+    const character = document.getElementById("character")
+    const gravity = -0.5
+    let h1 = document.querySelector("h1")
+    let k=0
+    let speed = 0
+    let inAir = false
+    document.addEventListener("keydown",(e) =>{
+        switch(e.key) {
+
+            case "ArrowLeft":
+                character.style.left = `${parseFloat(character.style.left ) -10}px` 
+                break
+            case "ArrowRight":
+                character.style.left = `${parseFloat(character.style.left ) +10}px` 
+                break
+            case " ":
+                jump()
+        }
+    })
+    function whileInAir() {
+        if (parseFloat(character.style.top) > 500) {
+            inAir = false
+            character.style.top = `500px`
+        }
+        if (inAir === true) {
+            speed += gravity
+            character.style.top = `${parseFloat(character.style.top ) -speed}px`
+            
+        }
+        
+        
+
+    }
+    function jump() {
+        speed = 5
+        inAir = true
+    }
+    function time() {
+        k+=1
+        h1.innerHTML = k
+
+    }
+    function colide() {
+        const differnceLeft = parseInt(circle.style.left) - parseInt(character.style.left)
+        const differnceTop = parseInt(circle.style.top) - parseInt(character.style.top)
+        const range = 30
+        if ((differnceLeft <= range && differnceLeft >= -range) && (differnceTop <= range && differnceTop >= -range)){
+            ballMove(10)
+        }
+    }
+    function ballMove(speed) {
+        circle.style.top = `${parseFloat(circle.style.top) + speed}px`
+    }
+    
+    setInterval(whileInAir,50)
+    setInterval(time, 1000)
+    setInterval(colide, 10)
+
+    
+</script>

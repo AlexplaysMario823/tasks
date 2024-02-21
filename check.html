@@ -1,0 +1,15 @@
+<!doctype html>
+<p>Open developer tools then 'sources' tab then click line 12 and look at the 'call stack' and the 'scope' at various points in the call stack.</p>
+<script>
+console.log(first(5))
+
+function first (num) {
+  let a = 3
+  return second(num + a)
+}
+
+function second (num) {
+  let b = 7
+  return (num * 7)
+}
+</script>

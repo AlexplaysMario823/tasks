@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        let l = {}
+        function hi() {
+            event.preventDefault()
+            
+            const input = document.getElementById("input")
+            hash(input.value)
+            input.value = ""
+
+        }
+        function hash(word) {
+            let r="" 
+            let k=""
+            
+            for (let x=0; x<word.length; x++) {
+                k = word.charCodeAt(x)
+                r += (k.toString().charCodeAt(0) + (k.toString().charCodeAt(1))) 
+
+            }
+            r = r % 20
+            const ol = document.querySelector("ol")
+            ol.innerHTML += `<li>${word}</li>`
+            return r
+        }
+
+    </script>
+</head>
+<body>
+    <div id="container">
+        <form action="" onsubmit="hi()">
+            <input type="text"  id="input" autocomplete="off">
+        </form>
+        
+    </div>
+    <ol></ol>
+
+
+    
+    
+</body>
+</html>

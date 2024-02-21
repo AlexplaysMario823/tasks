@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            background-color: black;
+        }
+
+        .container > div {
+            background-color: rgb(116, 86, 86);
+            width: 100%;
+            aspect-ratio: 1/1;
+            border: 1px solid black;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border: 1px solid black;
+            border-radius: 32px;
+        }
+
+        .input-container {
+            padding: 32px;
+        }
+    </style>
+    <script>
+        const hashTable = new Array(8).fill(null);
+
+        console.log(hashTable)
+
+        function hash(word) {
+            let total = 0
+            const wordArray = word.split("")
+            const asciiNumbers = wordArray.map(letter => letter.charCodeAt(0))
+            asciiNumbers.forEach(number => total+=number)
+            return (total % hashTable.length)
+        }
+
+        function addName(event) {
+            event.preventDefault();
+            const input = document.getElementById("input").value
+            let hashValue = hash(input)
+            let a=0
+            while ((hashTable[hashValue] !== null) && (a<hashTable.length)) {
+                a = (a+1) 
+                hashValue = (hashValue + 1) % (hashTable.length)
+            }
+            if (a===8) {
+                alert("stop")
+                
+            }
+            else{
+                hashTable[hashValue] = input
+                console.log(hashTable)
+            }
+            
+            document.getElementById("input").value = ""
+            updateUI()
+        }
+
+        function updateUI() {
+            const boxes = document.querySelectorAll('.container > div')
+
+            hashTable.forEach((name, index) => {
+                console.log(name, index)
+                boxes[index].innerHTML = name
+            })
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <form class="input-container" onsubmit="addName(event)">
+        <input type="text" autocomplete="off" id="input">
+    </form>
+</body>
+</html>

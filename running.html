@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+            let fallingSpeed = 0
+
+            function setUpEverything(ID, name) {
+                const selectedChar = document.getElementById(ID);
+                selectedChar.style.position = 'absolute'; 
+                selectedChar.style.width = name.width + 'px';
+                selectedChar.style.height = name.height + 'px';
+                selectedChar.style.top = name.top + 'px';
+                selectedChar.style.left = name.left + 'px';
+                selectedChar.style.backgroundColor = name.color;
+            }
+            function gravity(gConst=0.2) {
+                if (inAir()) {
+                    fallingSpeed += gConst
+                }
+
+                
+            }
+
+            function inAir() {
+                const characterElement = document.getElementById('character')
+                return (parseFloat(characterElement.style.top) < window.innerHeight - mainCharacter.height)
+            }
+            function fallDown() {
+                const characterElement = document.getElementById('character');
+                characterElement.style.top = `${Math.min(parseFloat(characterElement.style.top) + fallingSpeed, window.innerHeight-30)}px`
+            }
+            function jump() {
+                if (!(inAir())) { 
+                    fallingSpeed = -10
+                }
+                
+            }
+            function character(width, height, top, left, name, color) {
+                this.width = width;
+                this.height = height;
+                this.top = top;
+                this.left = left;
+                this.name = name;
+                this.color = color;
+
+            }
+
+            const mainCharacter = new character(30, 30, window.innerHeight-30, 30, 'mainCharacter', 'green');
+            const hat =  new character(30, 30, 100, 100, 'hat', 'red')
+            window.onload = function() {
+                /*const characterElement = document.getElementById('character');
+                characterElement.style.position = 'absolute'; 
+                characterElement.style.width = mainCharacter.width + 'px';
+                characterElement.style.height = mainCharacter.height + 'px';
+                characterElement.style.top = mainCharacter.top + 'px';
+                characterElement.style.left = mainCharacter.left + 'px';
+                characterElement.style.backgroundColor = mainCharacter.color;*/
+                setUpEverything("character", mainCharacter)
+                setUpEverything("hat", hat)
+
+
+                
+
+            };
+            
+            document.addEventListener('keydown', (e) => {
+                const characterElement = document.getElementById('character');
+                const amount = 20
+                switch (e.key) {
+                    case 'ArrowLeft':
+                        characterElement.style.left = `${Math.max(parseFloat(characterElement.style.left) - amount, 0)}px`
+                        break;
+                
+                    case 'ArrowRight':
+                        characterElement.style.left = `${Math.min(parseFloat(characterElement.style.left) + amount, window.innerWidth - mainCharacter.width)}px`
+                        break;
+                    case ' ':
+                        jump()
+                }
+            })
+            
+            
+            setInterval(fallDown, 10)
+            setInterval(gravity, 10)
+
+
+
+
+
+    </script>
+    <style>
+        *{
+            margin: 0;
+        }
+        #container{
+            width: 100vw;
+            height: 100vh;
+            background-color: grey;
+            position: absolute;
+            
+            
+        }
+
+
+
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="character"></div>
+        <div id="drawedCharacter">
+            <div id="hat"></div>
+        </div>
+
+    </div>
+    
+</body>
+</html>
