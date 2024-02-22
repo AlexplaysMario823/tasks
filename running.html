@@ -5,8 +5,195 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script>
+            // For next time I should program it so it place random Jems(that disapprear after 4 seconds) to collect
+            // My code has a glitch that I will fix later. The glitch is that if I pause it while I have invinsiblity frames than the seconds of my invinciblity frames are still counting down           
+            //Something went wrong while trying to make gems disappear and reappear
+            let forFlash = false
+            let s = 200
             let fallingSpeed = 0
+            let lives = 3
+            let pause = false
+            let breakTime = false
+            let seconds = 0
+            let inv = false
+            const keys = {
+                ArrowLeft: false,
+                ArrowRight: false,
+                ' ': false,
+                Enter: false
 
+            }
+            const theRelevantClock = setInterval(()=>{
+                if (!(pause)){
+                    s= Math.round((s-0.1) * 10) / 10 
+                }
+
+                return s
+            }, 100)
+            const timer = setInterval(()=>{
+                seconds++
+                console.log(seconds)
+                if (seconds>=10) {
+                    clearInterval(timer)
+                    return false
+                }
+                return true
+
+            }, 1000)
+            function updateLists() {
+                const livesL = document.getElementById("lives")
+                const time = document.getElementById("time")
+                livesL.innerHTML = `${lives} lives` 
+                time.innerHTML = `${s}`
+            }
+            function randomPlaceForGem() {
+                const top = Math.floor(200*Math.random()+300) 
+                const left = Math.floor(800*Math.random())
+                return [top, left]
+            }
+            function loadGems() {
+                setInterval(() => {
+                    const newGem = new character(10, 10, randomPlaceForGem()[0], randomPlaceForGem()[1], 'anything', 'orange')
+                    const gemsDiv = document.getElementById("gems")
+                    const newDiv = document.createElement("div")
+                    newDiv.className = 'hello'
+                    gemsDiv.appendChild(newDiv)
+                    setUpEverything('hello', newGem)
+                    setTimeout(() => {
+                        removeGem(newDiv.className)
+                    }, 4000);
+                }, 4000);
+                
+
+
+
+            }
+            function flash() {
+                if (!(pause)) {
+                    const characterElement = document.getElementById("character")
+                    if (forFlash) {
+                        characterElement.style.backgroundColor = 'red'
+                    }
+                    else {
+                        characterElement.style.backgroundColor = 'green'
+                    }
+                    forFlash = !(forFlash)
+                }
+
+                
+            }
+            function invinsibilityAct() {
+                if (inv) {
+                    flash()
+                    
+                }
+                else{
+                    clearInterval(newInterval)
+                }
+            }
+            function invinsibilityFrames() {
+                inv = true
+                const newInterval = setInterval(invinsibilityAct, 1)
+                setTimeout(() =>{
+                    inv = false
+                    clearInterval(newInterval)
+                }, 2000)
+
+
+
+            }
+            function removeGem(gemClass) {
+                const gem = document.getElementsByClassName(gemClass)
+                if (gem) {
+                    gem.parentNode.removeChild(gemClass)
+                }
+            }
+            function collectGem() {
+
+            }
+
+            function collideHatToCharacter(a="character", b="hat") {
+                if (!(inv) && !(pause)) {
+                    
+                    const [topDiff, leftDiff] = calculatorForDifference(a, b)
+                    if (a==="character" && b==="hat") {
+                        const maxdiff = 30
+                        const indentifyer = 'hat'
+
+                    }
+                    else if (a==="character" && b==="gems") {
+                        const maxdiff = 20
+                        const indentifyer = 'gems'
+
+                    }
+                    if (Math.abs(topDiff) < maxdiff  && Math.abs(leftDiff) < maxdiff) {
+                        if (indentifyer === "hat") {
+
+                            invinsibilityFrames()
+                            lives -= 1
+                            return true
+                        }
+                        else if (indentifyer === "gems") {
+                            collectGem()
+                        }
+
+                    }
+
+                        
+                }
+                return false
+                }
+                
+
+
+            
+            function life() {
+                if (!(pause)) {
+                    const title = document.querySelector('h1')
+                    const time = document.querySelector('h2')
+                    title.innerHTML = `${lives} lives`
+                    time.innerHTML = `${s}`
+                    
+                }
+            }
+        
+
+
+    
+             
+            function calculateDirection(target, chaser) {
+                const [topDiff, leftDiff] = calculatorForDifference(target, chaser)
+                const distance = Math.sqrt(topDiff**2 + leftDiff**2)
+
+                // This is calculating the unit vector
+                const direction = [topDiff/distance, leftDiff/distance] 
+                return direction
+
+            }
+            function chase() {
+                if (!(pause)) {
+                    const hatElement = document.getElementById("hat")
+                    const chaseSpeed = 1.5
+                    const direction = calculateDirection("character", "hat")
+                    hatElement.style.top = `${(Math.min(parseFloat(hatElement.style.top) + direction[0], window.innerHeight-43.33))}px`
+                    hatElement.style.left = `${parseFloat(hatElement.style.left) + direction[1]}px`
+                }
+                
+
+                
+            }
+            function calculatorForDifference(first, second) {
+                const firstTop = document.getElementById(first).style.top
+                const secondTop = document.getElementById(second).style.top
+                const firstLeft = document.getElementById(first).style.left
+                const secondLeft = document.getElementById(second).style.left
+                const topDiff = parseFloat(firstTop) - parseFloat(secondTop) 
+                const leftDiff = parseFloat(firstLeft) - parseFloat(secondLeft)
+                //console.log(topDiff, leftDiff)
+                return([topDiff, leftDiff])
+
+                
+            }
             function setUpEverything(ID, name) {
                 const selectedChar = document.getElementById(ID);
                 selectedChar.style.position = 'absolute'; 
@@ -17,7 +204,7 @@
                 selectedChar.style.backgroundColor = name.color;
             }
             function gravity(gConst=0.2) {
-                if (inAir()) {
+                if (inAir() && !(pause)) {
                     fallingSpeed += gConst
                 }
 
@@ -29,8 +216,11 @@
                 return (parseFloat(characterElement.style.top) < window.innerHeight - mainCharacter.height)
             }
             function fallDown() {
-                const characterElement = document.getElementById('character');
-                characterElement.style.top = `${Math.min(parseFloat(characterElement.style.top) + fallingSpeed, window.innerHeight-30)}px`
+                if (!(pause)) {
+                    const characterElement = document.getElementById('character');
+                    characterElement.style.top = `${Math.min(parseFloat(characterElement.style.top) + fallingSpeed, window.innerHeight-30)}px`
+                }
+
             }
             function jump() {
                 if (!(inAir())) { 
@@ -50,6 +240,7 @@
 
             const mainCharacter = new character(30, 30, window.innerHeight-30, 30, 'mainCharacter', 'green');
             const hat =  new character(30, 30, 100, 100, 'hat', 'red')
+            
             window.onload = function() {
                 /*const characterElement = document.getElementById('character');
                 characterElement.style.position = 'absolute'; 
@@ -60,6 +251,8 @@
                 characterElement.style.backgroundColor = mainCharacter.color;*/
                 setUpEverything("character", mainCharacter)
                 setUpEverything("hat", hat)
+                loadGems()
+                updateLists()
 
 
                 
@@ -67,24 +260,55 @@
             };
             
             document.addEventListener('keydown', (e) => {
-                const characterElement = document.getElementById('character');
-                const amount = 20
-                switch (e.key) {
-                    case 'ArrowLeft':
-                        characterElement.style.left = `${Math.max(parseFloat(characterElement.style.left) - amount, 0)}px`
-                        break;
+                keys[e.key] = true
+
                 
-                    case 'ArrowRight':
-                        characterElement.style.left = `${Math.min(parseFloat(characterElement.style.left) + amount, window.innerWidth - mainCharacter.width)}px`
-                        break;
-                    case ' ':
-                        jump()
-                }
+            })
+            document.addEventListener('keyup', (e) => {
+                keys[e.key] = false
+                breakTime = false
+                
             })
             
             
             setInterval(fallDown, 10)
             setInterval(gravity, 10)
+            setInterval(chase, 5)
+            setInterval(collide, 1)
+            setInterval(life, 5)
+            setInterval(() => {
+                const characterElement = document.getElementById('character');
+                const amount = 5
+                    
+                if (keys['ArrowLeft'] && !(pause)) {
+                        characterElement.style.left = `${Math.max(parseFloat(characterElement.style.left) - amount, 0)}px`
+                        
+                }
+                if (keys['ArrowRight'] && !(pause)) {
+                        characterElement.style.left = `${Math.min(parseFloat(characterElement.style.left) + amount, window.innerWidth - mainCharacter.width)}px`
+                }
+                if (keys[' '] && !(pause)) {
+                    jump()
+                }
+                if (keys['Enter'] && !(breakTime)) {
+                    breakTime = true
+                    pause = !(pause)
+                    const title = document.querySelector('h1')
+                    if (pause) {
+                        title.innerHTML = `paused`
+                    }
+                    else {
+                        title.innerHTML = `${lives} lives`
+                    }
+                }
+                
+                            
+                        
+                    
+                    
+                
+            }, 10)
+
 
 
 
@@ -103,6 +327,18 @@
             
             
         }
+        #hat{
+            border: 7px solid black;
+            border-radius: 50%;
+        }
+        h1{
+            align-content: center;
+            display: flex;
+            justify-content: center;
+        }
+        #gems > div{
+            border-radius: 33%;
+        }
 
 
 
@@ -111,9 +347,12 @@
 <body>
     <div id="container">
         <div id="character"></div>
-        <div id="drawedCharacter">
+        <div id="drawedCharacters">
             <div id="hat"></div>
         </div>
+        <div id="gems"></div>
+        <h1 id="lives"></h1>
+        <h2 id="time"></h2>
 
     </div>
     
