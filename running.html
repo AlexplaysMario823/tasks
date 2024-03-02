@@ -9,6 +9,30 @@
             // My code has a glitch that I will fix later. The glitch is that if I pause it while I have invinsiblity frames than the seconds of my invinciblity frames are still counting down           
             //Something went wrong while trying to make gems disappear and reappear
             //right now when you pause  the gem doesn't stop regenerating
+            function character(width, height, top, left, name, color) {
+                    this.width = width;
+                    this.height = height;
+                    this.top = top;
+                    this.left = left;
+                    this.name = name;
+                    this.color = color;
+            }
+            function setUpEverything(ID, name) {
+                    const selectedChar = document.getElementById(ID);
+                    selectedChar.style.position = 'absolute'; 
+                    selectedChar.style.width = name.width + 'px';
+                    selectedChar.style.height = name.height + 'px';
+                    selectedChar.style.top = name.top + 'px';
+                    selectedChar.style.left = name.left + 'px';
+                    selectedChar.style.backgroundColor = name.color;
+            }
+            const keys = {
+                    ArrowLeft: false,
+                    ArrowRight: false,
+                    ' ': false,
+                    Enter: false
+
+            }
             function firstLevel() {
 
             
@@ -23,13 +47,7 @@
                 let breakTime = false
                 let seconds = 0
                 let inv = false
-                const keys = {
-                    ArrowLeft: false,
-                    ArrowRight: false,
-                    ' ': false,
-                    Enter: false
 
-                }
                 const theRelevantClock = setInterval(()=>{
                     if (!(pause)){
                         s= Math.round((s-0.1) * 10) / 10 
@@ -52,6 +70,7 @@
                     thePointsDiv.innerHTML = `${points}`
                 }
                 function end() {
+                    inv = false
                     clearInterval(theInterval)
                     clearInterval(fallDownInterval)
                     clearInterval(chaseInterval)
@@ -61,13 +80,13 @@
                     clearInterval(keyInterval)
                     clearInterval(gravityInterval)
                     clearInterval(checkIfEndInterval)
-                    
-                    document.body.innerHTML = '<h1>GameOver</h1>'
+                    secondLevel()
                 }
                 function checkIfEnd() {
                     if (lives <= 0 || s <= 0) {
                         end()
                     } 
+                    
 
                 }
                 function updateLists() {
@@ -124,6 +143,8 @@
 
                     
                 }
+                let newInterval;
+
                 function invinsibilityAct() {
                     if (inv) {
                         flash()
@@ -135,7 +156,7 @@
                 }
                 function invinsibilityFrames() {
                     inv = true
-                    const newInterval = setInterval(invinsibilityAct, 1)
+                    newInterval = setInterval(invinsibilityAct, 1)
                     setTimeout(() =>{
                         inv = false
                         clearInterval(newInterval)
@@ -250,15 +271,7 @@
 
                     
                 }
-                function setUpEverything(ID, name) {
-                    const selectedChar = document.getElementById(ID);
-                    selectedChar.style.position = 'absolute'; 
-                    selectedChar.style.width = name.width + 'px';
-                    selectedChar.style.height = name.height + 'px';
-                    selectedChar.style.top = name.top + 'px';
-                    selectedChar.style.left = name.left + 'px';
-                    selectedChar.style.backgroundColor = name.color;
-                }
+
                 function gravity(gConst=0.2) {
                     if (inAir() && !(pause)) {
                         fallingSpeed += gConst
@@ -284,15 +297,7 @@
                     }
                     
                 }
-                function character(width, height, top, left, name, color) {
-                    this.width = width;
-                    this.height = height;
-                    this.top = top;
-                    this.left = left;
-                    this.name = name;
-                    this.color = color;
 
-                }
 
                 const mainCharacter = new character(30, 30, window.innerHeight-30, 30, 'mainCharacter', 'green');
                 const hat =  new character(30, 30, 100, 100, 'hat', 'red')
@@ -369,10 +374,57 @@
 
 
             }
+            function secondLevel() {
+                document.body.innerHTML = '<div id="container"> <div id="character"></div> <h1>GameOver</h1> <audio src="files/mixkit-big-thunder-rumble-1297.wav" id="audioPlayer"></audio> </div>'
+                const audioPlayer = document.getElementById("audioPlayer")
+                audioPlayer.play()
+                const container = document.getElementById("container")
+                container.style.width = '100vw'
+                container.style.height = '100vh'
+                container.style.backgroundColor = 'red'
+                container.style.margin = 0 
+                
+                const mainCharacter = new character(50, 50, parseFloat(window.innerHeight)-50, 50, 'hi', 'yellow')
+                setUpEverything("character", mainCharacter)
+                const enemyDiv = document.createElement("div") 
+                enemyDiv.id = 'enemy'
+                document.getElementById("container").appendChild(enemyDiv)
+                const enemy = new character(30, 60, parseFloat(window.innerHeight)-60, 200, 'hi', 'green')
+                setUpEverything('enemy', enemy)
+                const mainCharacterDiv = document.getElementById("character")
+                const keyInterval = setInterval(() => {
+                    const amount = 5
+                        
+                    if (keys['ArrowLeft']) {
+                            mainCharacterDiv.style.left = `${Math.max(parseFloat(mainCharacterDiv.style.left) - amount, 0)}px`
+                    }
+                    if (keys['ArrowRight']) {
+                            mainCharacterDiv.style.left = `${Math.min(parseFloat(mainCharacterDiv.style.left) + amount, window.innerWidth - parseFloat(mainCharacterDiv.style.width))}px`
+
+                    }
+
+                                
+                            
+                        
+                        
+                    
+                }, 10)
+
+                
+
+
+
+
+                
+
+
+            }
+
 
             window.onload = function() {
                 firstLevel()
             }
+
 
 
 
@@ -417,6 +469,7 @@
         <h1 id="lives"></h1>
         <h2 id="time"></h2>
         <h3 id="points"></h3>
+    
 
     </div>
     
