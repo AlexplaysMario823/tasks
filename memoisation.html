@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+    
+        
+    </style>
+    <script>
+        let answer = calculate()
+        function calculate() {
+            const input = document.getElementById("memos")
+            if ((input.value).includes("+")) {
+                return (...args) {
+                    let index = (input.value).indexOf("+")
+                    num1 = (input.value)[index-1]
+                    num2 = (input.value)[index-2]
+                    await sleep(1000)
+                    console.log(num1+num2)
+                }
+            }
+            else {
+                alert("Invalid")
+            }
+            input.value = ""
+            
+            
+            
+        }
+
+    </script>
+</head>
+<body>
+    <div>
+        <h1>Caching functions by memoising them</h1>
+
+        <label>Calculation? <input type="search" id="memos" ></label>
+        <button onclick="calculate()" id="button"></button>
+        
+    </div>
+    
+</body>
+</html>

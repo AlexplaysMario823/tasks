@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChessBoard</title>
+    <style>
+        * {
+            margin: 0;
+        }
+        #container {
+            width: 100%;
+            height: 100vh;
+            background-color: blue;
+        }
+        #chessBoard {
+            width: 500px;
+            height: 500px;
+            background-color: white;
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+        }
+        .blackSquare, .whiteSquare {
+
+            width: 62.5px;
+            height: 62.5px;
+
+
+        }
+        .blackSquare {
+            background-color: black;
+        }
+        .whiteSquare {
+            background-color: white;
+        }
+    </style>
+    <script>
+
+        function createChessBoardArray() {
+            const array = []
+            for (let x=0; x<8; x++) {
+                const row = []
+                for (let y=0; y<8; y++) {
+                    row.push("0")
+                }
+                array.push(row)
+            }
+
+            return array
+        }
+        const ChessBoardArray = createChessBoardArray()
+        function add64Divs() {
+            const chessBoard = document.getElementById("chessBoard")
+            for (let x=0; x<64; x++) {
+                let newDiv = document.createElement("div")
+                if ((x % 2 + Math.floor(x / 8))%2===1) {
+                    newDiv.className = 'blackSquare'
+                }
+                else {
+                    newDiv.className = 'whiteSquare'
+
+                }
+                
+                chessBoard.appendChild(newDiv)
+
+            }
+        }
+        function updateBoard() {
+            for (x=0; x<64; x++) {
+                let index1 = x % 8
+                let index2 = Math.floor(x / 8)
+                let square = index1 + index2 * 8
+                if (ChessBoardArray[index1][index2] === "1" ) {
+                    document.querySelector("#chessBoard").children[square].style.backgroundColor = 'red'
+                }
+            }
+        }
+    
+        document.addEventListener("DOMContentLoaded", add64Divs)
+        documnet.querySelector('chessBoard').addEventListener("click", ()=>{
+            
+        })
+        
+    </script>
+
+</head>
+<body>
+    <div id="container">
+        <div id="chessBoard">
+            
+        </div>
+
+    </div>
+    
+</body>
+</html>

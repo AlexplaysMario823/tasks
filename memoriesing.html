@@ -1,0 +1,48 @@
+<!doctype html>
+<title>Caching functions by memoising them</title>
+<style>
+  button { margin: 5px; cursor: pointer; }
+  .clicked { background: green; color: white; }
+  #output { font-size: 30px; font-weight: bold; }
+</style>
+<h1>calculator</h1>
+
+<label>Memoise? <input type="checkbox" id="memos"></label>
+<div id="buttons"></div>
+
+<div id="output"></div>
+<input type="text" id="input">
+
+<script>
+let sleep = (ms) => new Promise(r => setTimeout(r, ms)) // promisified sleep
+
+let memoTriple = memoise(triple) // create a high order function that memoises the triple function
+
+for (let i = 0; i < 20; i++) {
+  buttons.innerHTML += `<button onclick="outputTriple(${i}); this.classList.add('clicked')">${i}</button>`
+}
+
+async function outputTriple (num) {
+  output.innerText = `Trippling ${num}...`
+  // use the memoised version or not, depending on the state of the checkbox
+  let val = memos.checked ? await memoTriple(num) : await triple(num)
+  output.innerText = `Triple ${num} is ${val}!`
+}
+
+async function triple (num) {
+  await sleep(1000) // here we're pretending that tripling a number takes some time
+  return num * 3
+}
+
+function memoise (func) {
+  let cache = {}
+  return (...args) => { // 'args' array will include all arguments to the function
+    let key = JSON.stringify(args) // if just one argument can do 'key = args[0]' instead
+    if (key in cache) return cache[key] // if it has been cached, return the cached item
+    else {
+      cache[key] = func(args) // call our triple function with the arguments, caching the result
+      return cache[key] // then return that cached result
+    }
+  }
+}
+</script>

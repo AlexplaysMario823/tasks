@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Mario Game</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #gameCanvas { display: block; background: #5c94fc; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = 800;
+        canvas.height = 400;
+
+        const gravity = 0.5;
+        let mario = {
+            sprite: new Image(),
+            x: 50,
+            y: 0,
+            width: 50,
+            height: 80,
+            speed: 5,
+            dx: 0,
+            dy: 0,
+            jumpHeight: -10,
+            onGround: false
+        };
+
+        mario.sprite.src = 'mario_sprite.png'; // Add the correct path to your Mario sprite image
+
+        function update() {
+            if (mario.y + mario.height < canvas.height) {
+                mario.dy += gravity;
+                mario.onGround = false;
+            } else {
+                mario.dy = 0;
+                mario.onGround = true;
+                mario.y = canvas.height - mario.height; // Keep Mario grounded
+            }
+
+            mario.x += mario.dx;
+            mario.y += mario.dy;
+
+            // Implement collision detection here
+
+            mario.dx = 0;
+        }
+
+        function drawMario() {
+            ctx.drawImage(mario.sprite, 0, 0, mario.width, mario.height, mario.x, mario.y, mario.width, mario.height);
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawMario();
+        }
+
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            switch (event.key) {
+                case 'ArrowRight':
+                    mario.dx = mario.speed;
+                    break;
+                case 'ArrowLeft':
+                    mario.dx = -mario.speed;
+                    break;
+                case 'ArrowUp':
+                    if (mario.onGround) {
+                        mario.dy = mario.jumpHeight;
+                    }
+                    break;
+            }
+        });
+
+        gameLoop();
+    </script>
+</body>
+</html>

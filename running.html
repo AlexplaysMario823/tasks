@@ -9,6 +9,18 @@
             // My code has a glitch that I will fix later. The glitch is that if I pause it while I have invinsiblity frames than the seconds of my invinciblity frames are still counting down           
             //Something went wrong while trying to make gems disappear and reappear
             //right now when you pause  the gem doesn't stop regenerating
+            function calculatorForDifference(first, second) {
+                const firstTop = document.getElementById(first).style.top
+                const secondTop = document.getElementById(second).style.top
+                const firstLeft = document.getElementById(first).style.left
+                const secondLeft = document.getElementById(second).style.left
+                const topDiff = parseFloat(firstTop) - parseFloat(secondTop) 
+                const leftDiff = parseFloat(firstLeft) - parseFloat(secondLeft)
+                //console.log(topDiff, leftDiff)
+                return([topDiff, leftDiff])
+
+                    
+            }
             function character(width, height, top, left, name, color) {
                     this.width = width;
                     this.height = height;
@@ -69,7 +81,7 @@
                     const thePointsDiv = document.querySelector('h3')
                     thePointsDiv.innerHTML = `${points}`
                 }
-                function end() {
+                function FinishLevelOne() {
                     inv = false
                     clearInterval(theInterval)
                     clearInterval(fallDownInterval)
@@ -82,10 +94,31 @@
                     clearInterval(checkIfEndInterval)
                     secondLevel()
                 }
+                function end() {
+                    inv = false
+                    clearInterval(theInterval)
+                    clearInterval(fallDownInterval)
+                    clearInterval(chaseInterval)
+                    clearInterval(collideInterval)
+                    clearInterval(lifeInterval)
+                    clearInterval(collectGemInterval)
+                    clearInterval(keyInterval)
+                    clearInterval(gravityInterval)
+                    clearInterval(checkIfEndInterval)
+                    document.body.innerHTML = ''
+
+                    
+                }
                 function checkIfEnd() {
                     if (lives <= 0 || s <= 0) {
                         end()
+
+                        
                     } 
+                    if (points >= 100) {
+                        FinishLevelOne()
+
+                    }
                     
 
                 }
@@ -259,18 +292,7 @@
 
                     
                 }
-                function calculatorForDifference(first, second) {
-                    const firstTop = document.getElementById(first).style.top
-                    const secondTop = document.getElementById(second).style.top
-                    const firstLeft = document.getElementById(first).style.left
-                    const secondLeft = document.getElementById(second).style.left
-                    const topDiff = parseFloat(firstTop) - parseFloat(secondTop) 
-                    const leftDiff = parseFloat(firstLeft) - parseFloat(secondLeft)
-                    //console.log(topDiff, leftDiff)
-                    return([topDiff, leftDiff])
 
-                    
-                }
 
                 function gravity(gConst=0.2) {
                     if (inAir() && !(pause)) {
@@ -375,23 +397,33 @@
 
             }
             function secondLevel() {
-                document.body.innerHTML = '<div id="container"> <div id="character"></div> <h1>GameOver</h1> <audio src="files/mixkit-big-thunder-rumble-1297.wav" id="audioPlayer"></audio> </div>'
+                document.body.innerHTML = '<div id="container">  <div id="character"></div></div> <audio src="files/mixkit-big-thunder-rumble-1297.wav" id="audioPlayer"></audio>'
                 const audioPlayer = document.getElementById("audioPlayer")
                 audioPlayer.play()
+                let collideIntoWallInterval = ''
                 const container = document.getElementById("container")
+
+                
                 container.style.width = '100vw'
                 container.style.height = '100vh'
-                container.style.backgroundColor = 'red'
-                container.style.margin = 0 
+                container.style.left = '0'
+
+                container.style.backgroundColor = 'black'
+
+
+                
+
+
                 
                 const mainCharacter = new character(50, 50, parseFloat(window.innerHeight)-50, 50, 'hi', 'yellow')
                 setUpEverything("character", mainCharacter)
                 const enemyDiv = document.createElement("div") 
                 enemyDiv.id = 'enemy'
                 document.getElementById("container").appendChild(enemyDiv)
-                const enemy = new character(30, 60, parseFloat(window.innerHeight)-60, 200, 'hi', 'green')
+                const enemy = new character(30, 60, 100, 200, 'hi', 'cyan')
                 setUpEverything('enemy', enemy)
                 const mainCharacterDiv = document.getElementById("character")
+
                 const keyInterval = setInterval(() => {
                     const amount = 5
                         
@@ -399,8 +431,11 @@
                             mainCharacterDiv.style.left = `${Math.max(parseFloat(mainCharacterDiv.style.left) - amount, 0)}px`
                     }
                     if (keys['ArrowRight']) {
-                            mainCharacterDiv.style.left = `${Math.min(parseFloat(mainCharacterDiv.style.left) + amount, window.innerWidth - parseFloat(mainCharacterDiv.style.width))}px`
+                            mainCharacterDiv.style.left = `${Math.min(parseFloat(mainCharacterDiv.style.left) + amount, window.innerWidth- parseFloat(mainCharacterDiv.style.width))}px`
 
+                    }
+                    if (keys[' ']) {
+                        jump()
                     }
 
                                 
@@ -409,14 +444,84 @@
                         
                     
                 }, 10)
+            setInterval(() => {
+                loadWalls(window.innerHeight-70, 800)
+                
+            }, 2000);
+            // here to
+            function inAir() {
+                const characterElement = document.getElementById('character')
+                return (parseFloat(characterElement.style.top) < window.innerHeight - mainCharacter.height)
+            }
+            function fallDown() {
+                
+                const characterElement = document.getElementById('character');
+                characterElement.style.top = `${Math.min(parseFloat(characterElement.style.top) + fallingSpeed, window.innerHeight-30)}px`
+                
+            }
+            function jump() {
+                if (!(inAir())) { 
+                    fallingSpeed = -10
+                }
+            }
+            //here
+                    
+            
 
                 
 
 
 
+            function moveWall(id) {
+                const moveWallTowardsCharacter = setInterval(() => {
+                    const wall = document.getElementById(id)
+                    wall.style.left = `${parseFloat(wall.style.left) - 5}px`
+                    if (parseFloat(wall.style.left) < 70) {
+                        clearInterval(moveWallTowardsCharacter)
+                        clearInterval(collideIntoWallInterval)
+                        wall.remove()
 
+
+                    }
+                }, 10);
+
+            }
+            function collideIntoWall(wallId) {
+                const mainCharacterDiv = document.getElementById("character")
+                const wallDiv = document.getElementById(wallId)
+                const leftDiff = `${parseFloat(mainCharacterDiv) - parseFloat(wallDiv)}px`
+                if (Math.abs(leftDiff) < 10) {
+                    console.log("collision")
+                }
                 
 
+            }
+
+                
+            function loadWalls(top, left) {
+                let k=""
+                const wall = new character(20, 70, top, left, 'hi', 'green')
+                while (true) {
+                    k = `hello${Math.floor(1000 * Math.random())}`
+                    if (document.getElementById(k) === null) {
+                        break
+                    }
+                }
+                const wallId = k 
+
+                const specificWall = document.createElement("div")
+                specificWall.id = wallId
+                document.getElementById("container").appendChild(specificWall)
+                setUpEverything(wallId, wall)
+                moveWall(wallId)
+                let collideIntoWallInterval = setInterval(() => {
+                    collideIntoWall()
+                }, 10); 
+                
+                
+
+                
+            }
 
             }
 
